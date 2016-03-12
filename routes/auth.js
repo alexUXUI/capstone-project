@@ -5,7 +5,6 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var session = require('express-session')
 var app = express();
 
-
 passport.use(new GoogleStrategy({
     clientID: '773900865133-sjfq4unc2f2c0jvvbrrseb3j2r0d0eks.apps.googleusercontent.com',
     clientSecret: '5nk_rXLaJKhiq1Xu6YiMvbjf',
