@@ -62,12 +62,12 @@ app.get('/logout', function(req, res, next){
   res.redirect('/')
 })
 ////////////////////////////////////////////////////////////////////////////////
-// app.get('/mainpage', function(req, res, next){
-//   knex('users').select().then(function(data){
-//     console.log('sending back data');
-//     res.status(200).json({data: data})
-//   })
-// })
+app.get('/mainpage', function(req, res, next){
+  knex('users').select().then(function(data){
+    console.log('sending back data');
+    res.status(200).json({data: data})
+  })
+})
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
