@@ -4,40 +4,18 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-const warroom = require("./warroom-client");
+
+var passport = require('passport');
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var session = require('express-session')
+
 
 // require('dotenv').load();
-
-var db = require('monk')('mongodb://localhost:27017/warroom'); // dev
-// var db = require('monk')('mongodb://heroku_hgc747n0:rrroun5v0ofcfsmjvk70m4h0rn@ds015478.mongolab.com:15478/heroku_hgc747n0'); // produciton
-var database = db.get('stats');
-
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
-
-app.io = require('socket.io')();
-
-function updateDB(data) {
-	return db.get('times').insert({ id: data.id, responseTime: data.responseTime });
-}
-
-function getAverage(data) {
-	return new Promise(function(resolve, reject){
-		db.get('times').find({ id: data.id }, { limit: 100, sort: {_id: -1} })
-		.success(function(results) {
-			var average = 0;
-			for (var i in results) {
-				average += results[i].responseTime;
-			}
-			data.average = average / 100;
-			resolve(data);
-		});
-	});
-}
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -54,25 +32,61 @@ app.use(express.static("./client"));
 app.use('/', routes);
 app.use('/users', users);
 
-app.io.on('connection', function (socket) {
-	warroom(function(error, data) {
-		dataToSend = data.data.map(function(server){
-			return new Promise (function(resolve, reject) {
-				updateDB(server)
-				.success(function() {
-					resolve(getAverage(server));
-				});
-			});
-		});
-		Promise.all(dataToSend).then(function(servers) {
-			socket.emit("status", {
-				body: {data: servers},
-			});
-		}).catch(function(err) {
-			console.log(err);
-		});
-	});
-});
+
+passport.use(new GoogleStrategy({
+    clientID: '773900865133-sjfq4unc2f2c0jvvbrrseb3j2r0d0eks.apps.googleusercontent.com',
+    clientSecret: '5nk_rXLaJKhiq1Xu6YiMvbjf',
+    callbackURL: "http://localhost:3000/auth/google/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+    process.nextTick(function() {
+      return done(null, profile);
+    });
+  }
+));
+
+passport.serializeUser(function(user,done){
+  done(null, user)
+})
+
+passport.deserializeUser(function(obj,done){
+  done(null, obj)
+})
+
+app.use(session({
+  secret: 'keyboardcat',
+  resave: true,
+  saveUninitialized: true,
+}))
+
+// user authenication
+app.use(passport.initialize());
+app.use(passport.session());
+
+// run authentication
+function ensureAuthenticated(req, res, next) {
+ console.log("ensureAuthenticated",req.isAuthenticated());
+ if (req.isAuthenticated()) { return next(); }
+ res.redirect('/');
+}
+
+// google oauth
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' }));
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/users');
+  });
+
+app.get('/logout', function(req, res, next){
+  req.logout();
+  res.redirect('/')
+})
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

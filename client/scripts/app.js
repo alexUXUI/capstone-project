@@ -1,17 +1,17 @@
-angular.module('warRoom', ['ui.router'])
+angular.module('capstone', ['ui.router'])
   .config(function($stateProvider, $urlRouterProvider){
       $urlRouterProvider.otherwise('/');
-      $stateProvider.state('overview', {
-        templateUrl: 'templates/overview.html',
-        controller: 'OverviewController',
-        url: '/'
-      }).state('details', {
-        templateUrl: 'templates/details.html',
-        controller: 'DetailsController',
-        url: '/details/:id'
-      }).state('settings', {
-        templateUrl: 'templates/settings.html',
-        controller: 'SettingsController',
-        url: '/settings'
+      $stateProvider.state('onboard', {
+        templateUrl: 'templates/onboard.html',
+        controller: 'LandingController',
+        url: '/onboard'
+      }).state('landing', {
+        templateUrl: 'templates/landing.html',
+        controller: 'LandingController',
+        url: '/landing'
+      }).state('main', {
+        templateUrl: 'templates/main.html',
+        controller: 'MainController',
+        url: '/main'
       });
     });
