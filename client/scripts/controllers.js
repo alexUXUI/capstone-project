@@ -7,23 +7,15 @@ function LandingController($scope) {
   $scope.secondVariable = "start the revolution"
 }
 
-function MainController($scope, $http) {
+function MainController($scope, $http, getUsers) {
+
+  getUsers.then(function(users){
+    $scope.realUsers = users;
+    console.log($scope.realUsers)
+  })
 
   $scope.whatever = 'whatever';
+  $scope.users = [];
 
-
-  $scope.getUsers = $http({
-    method: 'GET',
-    url: '/mainpage'
-  }).then(function successCallback(response) {
-      $scope.users = [];
-      for(i = 0; i< response.data.data.length; i = i + 1){
-        $scope.user = response.data.data[i];
-        $scope.users.push($scope.user)
-      }
-        console.log($scope.users);
-    }, function errorCallback(response) {
-      console.log('something went wrong');
-  });
 
 }
