@@ -1,6 +1,6 @@
 angular.module('capstone', ['ui.router'])
   .config(function($stateProvider, $urlRouterProvider){
-      $urlRouterProvider.otherwise('/');
+      $urlRouterProvider.otherwise('/landing');
       $stateProvider.state('onboard', {
         templateUrl: 'templates/onboard.html',
         controller: 'LandingController',
