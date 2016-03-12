@@ -14,7 +14,7 @@ var routes = require('./routes/index');
 var auth = require('./routes/auth');
 var users = require('./routes/users');
 var app = express();
-var db = require('knex')
+var db = require('knex');
 var knex = require('./db/knex');
 ////////////////////////////////////////////////////////////////////////////////
 // view engine setup
@@ -68,8 +68,6 @@ app.get('/mainpage', function(req, res, next){
     res.status(200).json({data: data})
   })
 })
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
